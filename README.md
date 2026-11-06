@@ -75,6 +75,15 @@ Reinstall the current working copy after changes:
 kpackagetool6 -t Plasma/Applet -u package
 ```
 
+## Translations
+
+The Spanish catalog is in `package/translate/es.po`. To update its message
+template after changing translatable QML strings, run
+`package/translate/merge.sh`. To compile the catalog for the widget, run
+`package/translate/build.sh`; the resulting `.mo` file is stored in the package
+so it is included when installing the plasmoid. Both scripts require GNU
+gettext (`xgettext`, `msgmerge`, and `msgfmt`).
+
 ## Configuration
 
 The widget exposes:

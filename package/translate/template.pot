@@ -1,0 +1,183 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the io.maciek.plasma.upsmonitor package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: io.maciek.plasma.upsmonitor\n"
+"Report-Msgid-Bugs-To: https://github.com/maku2903/plasma-ups-monitor/issues\n"
+"POT-Creation-Date: 2026-11-06 01:44-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: contents/ui/CompactRepresentation.qml contents/ui/FullRepresentation.qml
+msgid "Check connection"
+msgstr ""
+
+#: contents/ui/configGeneral.qml
+msgid "UPS name"
+msgstr ""
+
+#: contents/ui/configGeneral.qml
+msgid "Detected local UPS"
+msgstr ""
+
+#: contents/ui/configGeneral.qml
+msgid "Refresh"
+msgstr ""
+
+#: contents/ui/configGeneral.qml
+msgid "Choose a detected local UPS or enter a custom NUT target below."
+msgstr ""
+
+#: contents/ui/configGeneral.qml
+msgid ""
+"No local UPS detected. Enter a custom NUT target below, for example ups."
+msgstr ""
+
+#: contents/ui/configGeneral.qml
+msgid "Refresh interval (seconds)"
+msgstr ""
+
+#: contents/ui/configGeneral.qml
+msgid "Show last power loss time"
+msgstr ""
+
+#: contents/ui/FullRepresentation.qml contents/ui/main.qml
+msgid "UPS Monitor"
+msgstr ""
+
+#: contents/ui/FullRepresentation.qml contents/ui/main.qml
+msgid "Unavailable"
+msgstr ""
+
+#: contents/ui/FullRepresentation.qml contents/ui/main.qml
+msgid "Alarm"
+msgstr ""
+
+#: contents/ui/FullRepresentation.qml
+msgid "Input (AC)"
+msgstr ""
+
+#: contents/ui/FullRepresentation.qml
+msgid "Output (AC)"
+msgstr ""
+
+#: contents/ui/FullRepresentation.qml
+msgid "UPS output"
+msgstr ""
+
+#: contents/ui/FullRepresentation.qml
+msgid "UPS Load"
+msgstr ""
+
+#: contents/ui/FullRepresentation.qml
+msgid "Battery"
+msgstr ""
+
+#: contents/ui/FullRepresentation.qml
+msgid "Nominal: %1"
+msgstr ""
+
+#: contents/ui/FullRepresentation.qml
+msgid "Temperature"
+msgstr ""
+
+#: contents/ui/FullRepresentation.qml
+msgid "Frequency"
+msgstr ""
+
+#: contents/ui/FullRepresentation.qml
+msgid "Input frequency"
+msgstr ""
+
+#: contents/ui/FullRepresentation.qml
+msgid "Last power loss"
+msgstr ""
+
+#: contents/ui/main.qml
+msgid "Never"
+msgstr ""
+
+#: contents/ui/main.qml
+msgid "No data"
+msgstr ""
+
+#: contents/ui/main.qml
+msgid "Alarm • On battery"
+msgstr ""
+
+#: contents/ui/main.qml
+msgid "Alarm • Charging"
+msgstr ""
+
+#: contents/ui/main.qml
+msgid "Running on battery"
+msgstr ""
+
+#: contents/ui/main.qml
+msgid "Online • Charging"
+msgstr ""
+
+#: contents/ui/main.qml
+msgid "Online"
+msgstr ""
+
+#: contents/ui/main.qml
+#, no-javascript-format
+msgctxt "@info:tooltip"
+msgid "%1, %2, last power loss: %3"
+msgstr ""
+
+#: contents/ui/main.qml
+#, no-javascript-format
+msgctxt "@info:tooltip"
+msgid "Status: %1 | Input: %2 | Output: %3"
+msgstr ""
+
+#: contents/ui/main.qml
+msgid "N/A"
+msgstr ""
+
+#: contents/ui/main.qml
+#, no-javascript-format
+msgctxt "@item:intext battery percent"
+msgid "%1%"
+msgstr ""
+
+#: contents/ui/main.qml
+#, no-javascript-format
+msgctxt "@item:intext runtime"
+msgid "%1 h %2 min"
+msgstr ""
+
+#: contents/ui/main.qml
+#, no-javascript-format
+msgctxt "@item:intext runtime"
+msgid "%1 h"
+msgstr ""
+
+#: contents/ui/main.qml
+#, no-javascript-format
+msgctxt "@item:intext runtime"
+msgid "%1 min"
+msgstr ""
+
+#: contents/ui/main.qml
+msgid "No data returned by helper"
+msgstr ""
+
+#: contents/ui/main.qml
+msgid "Unknown UPS error"
+msgstr ""
+
+#: contents/ui/main.qml
+msgid "Invalid helper output"
+msgstr ""

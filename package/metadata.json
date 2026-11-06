@@ -8,10 +8,12 @@
         ],
         "Category": "System Information",
         "Description": "Monitor a NUT UPS from Plasma",
+        "Description[es]": "Supervisa un SAI conectado mediante NUT en Plasma",
         "Icon": "battery-ups",
         "Id": "io.maciek.plasma.upsmonitor",
         "License": "MIT",
         "Name": "UPS Monitor",
+        "Name[es]": "Monitor de SAI",
         "Version": "0.2.0",
         "Website": "https://github.com/maku2903/plasma-ups-monitor"
     },
