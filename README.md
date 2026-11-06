@@ -84,7 +84,7 @@ The widget exposes:
 
 Defaults:
 
-- UPS name: `eaton@localhost`
+- UPS name: first local UPS detected by `upsc -l`, or `ups` if none is detected
 - Refresh interval: `10`
 
 ## Notes

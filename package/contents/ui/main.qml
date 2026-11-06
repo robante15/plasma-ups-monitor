@@ -9,7 +9,8 @@ PlasmoidItem {
     id: root
 
     Plasmoid.backgroundHints: PlasmaCore.Types.DefaultBackground | PlasmaCore.Types.ConfigurableBackground
-    Plasmoid.icon: iconName
+    //Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
+    Plasmoid.icon: "battery"
     Plasmoid.title: info.ok && info.model ? info.model : i18n("UPS Monitor")
 
     implicitWidth: Kirigami.Units.gridUnit * 24
@@ -19,7 +20,7 @@ PlasmoidItem {
 
     readonly property string helperPath: String(Qt.resolvedUrl("../scripts/nut-status.sh")).replace(/^file:\/\//, "")
     readonly property int refreshSeconds: Math.max(3, Number(Plasmoid.configuration.refreshSeconds || 10))
-    readonly property string upsName: String(Plasmoid.configuration.upsName || "eaton@localhost")
+    readonly property string upsName: String(Plasmoid.configuration.upsName || "ups")
     readonly property string sourceCommand: "/bin/sh -lc " + shellQuote(shellQuote(helperPath) + " " + shellQuote(upsName))
     readonly property real countdownProgress: {
         const totalMs = refreshSeconds * 1000
@@ -44,6 +45,11 @@ PlasmoidItem {
         outputVoltage: null,
         runtimeSeconds: null,
         loadPercent: null,
+        inputVoltage: null,
+        inputFrequency: null,
+        batteryVoltage: null,
+        batteryVoltageNominal: null,
+        temperature: null,
         alarm: "",
         lastPowerLoss: "",
         error: ""
@@ -51,35 +57,36 @@ PlasmoidItem {
 
     property bool hasAlarm: info.ok && !!info.alarm && String(info.alarm).length > 0
     property bool isCharging: info.ok && hasStatusToken("CHRG")
-    property string iconName: {
-        if (!info.ok) {
-            return "battery-missing"
-        }
+    property bool showLastPowerLoss: Plasmoid.configuration.showLastPowerLoss
 
-        const percent = Number(info.batteryPercent)
-        let level = "missing"
-        if (Number.isFinite(percent)) {
-            if (percent >= 90) {
-                level = "100"
-            } else if (percent >= 70) {
-                level = "080"
-            } else if (percent >= 50) {
-                level = "060"
-            } else if (percent >= 30) {
-                level = "040"
-            } else if (percent >= 10) {
-                level = "020"
-            } else {
-                level = "000"
-            }
+    // Icon sources for the UI
+    readonly property string statusIconSource: {
+        if (hasStatusToken("OL") && hasStatusToken("BOOST")) {
+            return Qt.resolvedUrl("../resources/plug-circle-plus-solid-full.svg")
         }
-
-        if (isCharging) {
-            return "battery-" + level + "-charging"
+        if (hasStatusToken("OL") && hasStatusToken("TRIM")) {
+            return Qt.resolvedUrl("../resources/plug-circle-minus-solid-full.svg")
         }
-
-        return "battery-" + level
+        if (hasStatusToken("OB") && hasStatusToken("LB")) {
+            return Qt.resolvedUrl("../resources/battery-empty-solid-full.svg")
+        }
+        if (hasStatusToken("OB")) {
+            return Qt.resolvedUrl("../resources/battery-full-solid-full.svg")
+        }
+        if (hasStatusToken("OL")) {
+            return Qt.resolvedUrl("../resources/plug-circle-check-solid-full.svg")
+        }
+        return hasAlarm ? "dialog-warning" : info.onBattery ? "battery" : "connector-plug"
     }
+
+    readonly property string inputIconSource: Qt.resolvedUrl("../resources/plug-solid-full.svg")
+    readonly property string outputIconSource: Qt.resolvedUrl("../resources/outlet.svg")
+    readonly property string batteryIconSource: Qt.resolvedUrl("../resources/car-battery-solid-full.svg")
+    readonly property string loadIconSource: Qt.resolvedUrl("../resources/gauge-solid-full.svg")
+    readonly property string temperatureIconSource: Qt.resolvedUrl("../resources/temperature-high-solid-full.svg")
+    readonly property string wavesineIconSource: Qt.resolvedUrl("../resources/wave-sine.svg")
+    readonly property string clockIconSource: Qt.resolvedUrl("../resources/clock-rotate-left-solid-full.svg")
+    readonly property string upsIconSource: Qt.resolvedUrl("../resources/bolt-solid-full.svg")
 
     property color statusColor: {
         if (!info.ok) {
@@ -94,11 +101,17 @@ PlasmoidItem {
         return Kirigami.Theme.positiveTextColor
     }
 
+    // Strings for the UI
     property string percentText: formatPercent(info.batteryPercent)
     property string powerText: formatNumber(info.powerWatts, "W", 0)
     property string voltageText: formatNumber(info.outputVoltage, "V", 0)
     property string runtimeTextValue: formatRuntime(info.runtimeSeconds)
     property string loadText: formatNumber(info.loadPercent, "%", 0)
+    property string inputVoltageText: formatNumber(info.inputVoltage, "V", 0)
+    property string inputFrequencyText: formatNumber(info.inputFrequency, "Hz", 2)
+    property string batteryVoltageText: formatNumber(info.batteryVoltage, "V", 2)
+    property string batteryVoltageNominalText: formatNumber(info.batteryVoltageNominal, "V", 2)
+    property string temperatureText: formatNumber(info.temperature, "°C", 1)
     property string lastPowerLossText: info.ok && info.lastPowerLoss ? info.lastPowerLoss : i18n("Never")
     property string compactSecondaryText: {
         if (!info.ok) {
@@ -136,7 +149,7 @@ PlasmoidItem {
         if (hasAlarm) {
             return i18nc("@info:tooltip", "%1, %2, last power loss: %3", statusLine, info.alarm, lastPowerLossText)
         }
-        return i18nc("@info:tooltip", "%1, %2 remaining, last power loss: %3", statusLine, runtimeTextValue, lastPowerLossText)
+        return i18nc("@info:tooltip", "Status: %1 | Input: %2 | Output: %3", info.status, inputVoltageText, voltageText)
     }
 
     switchWidth: -1
@@ -248,6 +261,11 @@ PlasmoidItem {
                     outputVoltage: null,
                     runtimeSeconds: null,
                     loadPercent: null,
+                    inputVoltage: null,
+                    inputFrequency: null,
+                    batteryVoltage: null,
+                    batteryVoltageNominal: null,
+                    temperature: null,
                     alarm: "",
                     lastPowerLoss: "",
                     error: root.lastError
@@ -274,6 +292,11 @@ PlasmoidItem {
                     outputVoltage: null,
                     runtimeSeconds: null,
                     loadPercent: null,
+                    inputVoltage: null,
+                    inputFrequency: null,
+                    batteryVoltage: null,
+                    batteryVoltageNominal: null,
+                    temperature: null,
                     alarm: "",
                     lastPowerLoss: "",
                     error: String(error)

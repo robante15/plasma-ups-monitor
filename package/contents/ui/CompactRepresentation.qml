@@ -14,7 +14,9 @@ Item {
         spacing: Kirigami.Units.smallSpacing
 
         Kirigami.Icon {
-            source: root.iconName
+            source: root.statusIconSource
+            isMask: true
+            color: Kirigami.Theme.textColor
             Layout.preferredWidth: Kirigami.Units.iconSizes.medium
             Layout.preferredHeight: Kirigami.Units.iconSizes.medium
             opacity: root.info.onBattery ? 0.75 : 1
@@ -35,14 +37,14 @@ Item {
                 Layout.fillWidth: true
                 font.bold: true
                 horizontalAlignment: Text.AlignLeft
-                text: root.info.ok ? root.percentText : i18n("UPS")
+                text: root.info.ok ? root.voltageText : root.batteryVoltageText
                 color: root.statusColor
                 elide: Text.ElideRight
             }
 
             QQC2.Label {
                 Layout.fillWidth: true
-                text: root.compactSecondaryText
+                text: root.info.ok ? root.info.status : i18n("Check connection")
                 opacity: 0.75
                 font.pointSize: Math.max(8, Kirigami.Theme.defaultFont.pointSize - 1)
                 elide: Text.ElideRight

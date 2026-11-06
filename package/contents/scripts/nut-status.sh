@@ -1,7 +1,14 @@
 #!/usr/bin/env sh
 set -eu
 
-UPS_NAME="${1:-eaton@localhost}"
+UPS_NAME="${1:-ups}"
+if [ "$UPS_NAME" = "ups" ]; then
+    detected_ups="$(upsc -l 2>/dev/null || true)"
+    first_ups="$(printf '%s\n' "$detected_ups" | sed -n '/[^[:space:]]/{s/^[[:space:]]*//;s/[[:space:]]*$//;p;q;}')"
+    if [ -n "$first_ups" ]; then
+        UPS_NAME="${first_ups}@localhost"
+    fi
+fi
 LAST_ONBATT_FILE="/var/lib/ups/last-onbatt-epoch"
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/plasma-ups-monitor"
 LOCAL_LAST_ONBATT_FILE="${STATE_DIR}/last-onbatt-epoch"
@@ -56,6 +63,11 @@ watts="$(get_value 'ups.realpower')"
 voltage="$(get_value 'output.voltage')"
 runtime="$(get_value 'battery.runtime')"
 load="$(get_value 'ups.load')"
+input_voltage="$(get_value 'input.voltage')"
+input_frequency="$(get_value 'input.frequency')"
+battery_voltage="$(get_value 'battery.voltage')"
+battery_voltage_nominal="$(get_value 'battery.voltage.nominal')"
+temperature="$(get_value 'ups.temperature')"
 alarm="$(get_value 'ups.alarm')"
 last_onbatt=""
 last_onbatt_epoch=""
@@ -112,6 +124,21 @@ json_number_or_null "$runtime"
 printf ','
 printf '"loadPercent":'
 json_number_or_null "$load"
+printf ','
+printf '"inputVoltage":'
+json_number_or_null "$input_voltage"
+printf ','
+printf '"inputFrequency":'
+json_number_or_null "$input_frequency"
+printf ','
+printf '"batteryVoltage":'
+json_number_or_null "$battery_voltage"
+printf ','
+printf '"batteryVoltageNominal":'
+json_number_or_null "$battery_voltage_nominal"
+printf ','
+printf '"temperature":'
+json_number_or_null "$temperature"
 printf ','
 printf '"alarm":"%s",' "$(json_escape "$alarm")"
 printf '"lastPowerLoss":"%s",' "$(json_escape "$last_onbatt")"

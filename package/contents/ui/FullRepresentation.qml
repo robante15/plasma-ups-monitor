@@ -15,93 +15,47 @@ Item {
     Layout.minimumHeight: Kirigami.Units.gridUnit * 12
 
     readonly property bool compactHeightMode: height < Kirigami.Units.gridUnit * 12
-    readonly property bool sideBySideHeader: width >= Kirigami.Units.gridUnit * 24 && width > height * 1.45
-    readonly property int metricColumns: width >= Kirigami.Units.gridUnit * 24 ? 4 : 2
-    readonly property int sideHeaderWidth: Kirigami.Units.gridUnit * 14
     readonly property real batteryPercentValue: Number(root.info.batteryPercent)
     readonly property real clampedBatteryPercent: Number.isFinite(batteryPercentValue) ? Math.max(0, Math.min(100, batteryPercentValue)) : 0
-    readonly property int batteryCardHeight: compactHeightMode ? Kirigami.Units.gridUnit * 4 : Kirigami.Units.gridUnit * 5
-    readonly property color batteryFillColor: Qt.hsva((clampedBatteryPercent / 100) * 0.33, 0.78, 0.92, 1)
-    readonly property color batteryValueColor: {
-        if (!root.info.onBattery) {
-            return root.statusColor
-        }
-        return clampedBatteryPercent <= 35 ? "#f5f7fa" : "#11161c"
-    }
-    readonly property color batteryLabelColor: root.info.onBattery ? batteryValueColor : Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.75)
-    readonly property color batteryOutlineColor: clampedBatteryPercent <= 35 ? Qt.rgba(0, 0, 0, 0.32) : Qt.rgba(1, 1, 1, 0.18)
+    readonly property real loadPercentValue: Number(root.info.loadPercent)
+    readonly property real clampedLoadPercent: Number.isFinite(loadPercentValue) ? Math.max(0, Math.min(100, loadPercentValue)) : 0
+    readonly property real cardHeight: compactHeightMode ? Kirigami.Units.gridUnit * 4.5 : Kirigami.Units.gridUnit * 5.5
+    readonly property color secondaryTextColor: "#b9c5cc"
+    readonly property color cardColor: "#263640"
 
-    Component {
-        id: batteryCardComponent
-
-        Rectangle {
-            radius: Kirigami.Units.smallSpacing
-            color: Qt.rgba(Kirigami.Theme.backgroundColor.r, Kirigami.Theme.backgroundColor.g, Kirigami.Theme.backgroundColor.b, 0.08)
-            border.width: 1
-            border.color: Qt.rgba(1, 1, 1, 0.14)
-            clip: true
-
-            Rectangle {
-                visible: root.info.onBattery
-                anchors.left: parent.left
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                width: parent.width * (fullRoot.clampedBatteryPercent / 100)
-                color: fullRoot.batteryFillColor
-            }
-
-            ColumnLayout {
-                anchors.fill: parent
-                anchors.margins: Kirigami.Units.smallSpacing
-                spacing: 2
-
-                QQC2.Label {
-                    Layout.fillWidth: true
-                    text: i18n("Battery")
-                    color: fullRoot.batteryLabelColor
-                }
-
-                Text {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    text: root.percentText
-                    color: fullRoot.batteryValueColor
-                    font.pointSize: fullRoot.compactHeightMode ? Kirigami.Theme.defaultFont.pointSize + 10 : Kirigami.Theme.defaultFont.pointSize + 14
-                    font.bold: true
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    style: root.info.onBattery ? Text.Outline : Text.Normal
-                    styleColor: fullRoot.batteryOutlineColor
-                }
-            }
-        }
-    }
-
-    ColumnLayout {
+    Rectangle {
         anchors.fill: parent
-        anchors.margins: Kirigami.Units.largeSpacing
-        spacing: fullRoot.compactHeightMode ? Kirigami.Units.smallSpacing : Kirigami.Units.largeSpacing
+        radius: 12
+        color: Kirigami.Theme.backgroundColor
+        border.width: 1
+        border.color: "#40515b"
 
-        RowLayout {
-            id: headerRow
-            Layout.fillWidth: true
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: Kirigami.Units.largeSpacing
             spacing: fullRoot.compactHeightMode ? Kirigami.Units.smallSpacing : Kirigami.Units.largeSpacing
 
-            QQC2.Frame {
+            RowLayout {
                 Layout.fillWidth: true
-                Layout.minimumWidth: fullRoot.sideBySideHeader ? fullRoot.sideHeaderWidth : -1
-                Layout.preferredWidth: fullRoot.sideBySideHeader ? fullRoot.sideHeaderWidth : -1
-                Layout.preferredHeight: fullRoot.sideBySideHeader ? fullRoot.batteryCardHeight : -1
+                Layout.preferredHeight: Kirigami.Units.gridUnit * 4
+                spacing: Kirigami.Units.largeSpacing
 
-                RowLayout {
-                    anchors.fill: parent
-                    spacing: fullRoot.compactHeightMode ? Kirigami.Units.smallSpacing : Kirigami.Units.largeSpacing
+                Rectangle {
+                    Layout.preferredWidth: Kirigami.Units.gridUnit * 3.5
+                    Layout.preferredHeight: Kirigami.Units.gridUnit * 2.5
+                    radius: 10
+                    color: Kirigami.Theme.alternateBackgroundColor
+                    //border.width: 2
+                    //border.color: "#e7edf1"
 
                     Kirigami.Icon {
-                        source: root.iconName
-                        Layout.preferredWidth: fullRoot.compactHeightMode ? Kirigami.Units.iconSizes.large : Kirigami.Units.iconSizes.huge
-                        Layout.preferredHeight: fullRoot.compactHeightMode ? Kirigami.Units.iconSizes.large : Kirigami.Units.iconSizes.huge
+                        anchors.centerIn: parent
+                        source: root.upsIconSource
+                        width: Kirigami.Units.iconSizes.large
+                        height: width
                         opacity: root.info.onBattery ? 0.8 : 1
+                        isMask: true
+                        color: Kirigami.Theme.textColor
 
                         SequentialAnimation on opacity {
                             running: root.info.onBattery
@@ -110,263 +64,246 @@ Item {
                             OpacityAnimator { from: 0.45; to: 1; duration: 700 }
                         }
                     }
+                }
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 1
+
+                    QQC2.Label {
+                        Layout.fillWidth: true
+                        text: root.info.ok && root.info.model ? root.info.model : i18n("UPS Monitor")
+                        color: Kirigami.Theme.textColor
+                        font.pointSize: Kirigami.Theme.defaultFont.pointSize + 5
+                        font.bold: true
+                        elide: Text.ElideRight
+                    }
+
+                    QQC2.Label {
+                        Layout.fillWidth: true
+                        text: root.info.ok ? root.info.upsName : root.lastError
+                        color: Kirigami.Theme.disabledTextColor
+                        elide: Text.ElideRight
+                    }
+                }
+
+                Rectangle {
+                    Layout.minimumWidth: Kirigami.Units.gridUnit * 8
+                    Layout.preferredWidth: Kirigami.Units.gridUnit * 9
+                    Layout.preferredHeight: Kirigami.Units.gridUnit * 3.5
+                    radius: 10
+                    color: root.hasAlarm ? Kirigami.Theme.negativeBackgroundColor : root.info.onBattery ? Kirigami.Theme.neutralBackgroundColor : Kirigami.Theme.positiveBackgroundColor
+                    //border.width: 1
+                    //border.color: root.hasAlarm ? "#9b514d" : root.info.onBattery ? "#98712d" : "#27825d"
+
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.margins: Kirigami.Units.smallSpacing
+                        spacing: Kirigami.Units.smallSpacing
+
+                        Kirigami.Icon {
+                            source: root.statusIconSource
+                            isMask: true
+                            color: root.hasAlarm ? Kirigami.Theme.negativeTextColor : root.info.onBattery ? Kirigami.Theme.neutralTextColor : Kirigami.Theme.positiveTextColor
+                            Layout.preferredWidth: Kirigami.Units.iconSizes.large
+                            Layout.preferredHeight: Kirigami.Units.iconSizes.large
+                        }
+
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: 0
+
+                            QQC2.Label {
+                                Layout.fillWidth: true
+                                text: root.info.ok ? root.statusLine : i18n("Unavailable")
+                                color: Kirigami.Theme.textColor
+                                font.pointSize: Kirigami.Theme.defaultFont.pointSize + 2
+                                font.bold: true
+                                elide: Text.ElideRight
+                            }
+
+                            QQC2.Label {
+                                Layout.fillWidth: true
+                                text: root.info.ok ? root.info.status : i18n("Check connection")
+                                color: Kirigami.Theme.disabledTextColor
+                                elide: Text.ElideRight
+                            }
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                visible: root.hasAlarm
+                Layout.fillWidth: true
+                implicitHeight: Kirigami.Units.gridUnit * 3
+                radius: 10
+                color: Kirigami.Theme.negativeBackgroundColor
+                //border.width: 1
+                //border.color: "#9b514d"
+
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: Kirigami.Units.smallSpacing
+                    spacing: 0
+
+                    QQC2.Label {
+                        Layout.fillWidth: true
+                        text: i18n("Alarm")
+                        color: Kirigami.Theme.negativeTextColor
+                        font.bold: true
+                    }
+
+                    QQC2.Label {
+                        Layout.fillWidth: true
+                        text: root.info.alarm
+                        color: Kirigami.Theme.textColor
+                        wrapMode: Text.WordWrap
+                    }
+                }
+            }
+
+            GridLayout {
+                Layout.fillWidth: true
+                columns: 2
+                columnSpacing: fullRoot.compactHeightMode ? Kirigami.Units.smallSpacing : Kirigami.Units.largeSpacing
+                rowSpacing: fullRoot.compactHeightMode ? Kirigami.Units.smallSpacing : Kirigami.Units.largeSpacing
+
+                Repeater {
+                    model: [
+                        { title: i18n("Input (AC)"), value: root.inputVoltageText, detail: root.inputFrequencyText, iconSource: root.inputIconSource, badge: "", progress: -1 },
+                        { title: i18n("Output (AC)"), value: root.voltageText, detail: root.info.status || i18n("UPS output"), iconSource: root.outputIconSource, badge: "", progress: -1 },
+                        { title: i18n("UPS Load"), value: root.loadText, iconSource: root.loadIconSource, badge: "", progress: root.info.loadPercent === null || root.info.loadPercent === undefined ? -1 : fullRoot.clampedLoadPercent },
+                        { title: i18n("Battery"), value: root.batteryVoltageText, detail: i18n("Nominal: %1", root.batteryVoltageNominalText), iconSource: root.batteryIconSource, accent: Kirigami.Theme.positiveTextColor, badge: root.percentText, progress: -1 },
+                        { title: i18n("Temperature"), value: root.temperatureText, iconSource: root.temperatureIconSource, badge: "", progress: -1 },
+                        { title: i18n("Frequency"), value: root.inputFrequencyText, detail: i18n("Input frequency"), iconSource: root.wavesineIconSource, badge: "", progress: -1 }
+                    ]
+
+                    delegate: Rectangle {
+                        id: metricCard
+                        required property var modelData
+
+                        Layout.fillWidth: true
+                        implicitHeight: fullRoot.cardHeight
+                        radius: 12
+                        color: Kirigami.Theme.alternateBackgroundColor
+                        border.width: 1
+                        border.color: "#43545e"
+                        clip: true
+
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.margins: Kirigami.Units.largeSpacing
+                            spacing: Kirigami.Units.largeSpacing
+
+                            Kirigami.Icon {
+                                source: metricCard.modelData.iconSource
+                                isMask: true
+                                color: metricCard.modelData.accent || Kirigami.Theme.textColor
+                                Layout.preferredWidth: Kirigami.Units.iconSizes.large
+                                Layout.preferredHeight: Kirigami.Units.iconSizes.large
+
+                            }
+
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                spacing: 1
+
+                                RowLayout {
+                                    Layout.fillWidth: true
+                                    spacing: Kirigami.Units.smallSpacing
+
+                                    QQC2.Label {
+                                        Layout.fillWidth: true
+                                        text: metricCard.modelData.title
+                                        color: Kirigami.Theme.textColor
+                                        elide: Text.ElideRight
+                                    }
+
+                                    QQC2.Label {
+                                        visible: metricCard.modelData.badge.length > 0
+                                        text: metricCard.modelData.badge
+                                        color: Kirigami.Theme.positiveTextColor
+                                        font.bold: true
+                                    }
+                                }
+
+                                QQC2.Label {
+                                    Layout.fillWidth: true
+                                    text: metricCard.modelData.value
+                                    color: Kirigami.Theme.textColor
+                                    font.pointSize: Math.max(Kirigami.Theme.defaultFont.pointSize + 8, 20)
+                                    font.bold: true
+                                    elide: Text.ElideRight
+                                }
+
+
+
+                                Rectangle {
+                                    visible: metricCard.modelData.progress >= 0
+                                    Layout.fillWidth: true
+                                    Layout.preferredHeight: 8
+                                    radius: height / 2
+                                    color: "#455761"
+
+                                    Rectangle {
+                                        anchors.left: parent.left
+                                        anchors.top: parent.top
+                                        anchors.bottom: parent.bottom
+                                        width: parent.width * Math.max(0, Math.min(1, metricCard.modelData.progress / 100))
+                                        radius: parent.radius
+                                        color: "#35bdf0"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                visible: root.showLastPowerLoss
+                Layout.fillWidth: true
+                Layout.preferredHeight: Kirigami.Units.gridUnit * 4
+                radius: 10
+                color: Kirigami.Theme.alternateBackgroundColor
+                border.width: 1
+                border.color: "#43545e"
+
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.margins: Kirigami.Units.largeSpacing
+                    spacing: Kirigami.Units.largeSpacing
+
+                    Kirigami.Icon {
+                        source: root.clockIconSource
+                        isMask: true
+                        color: Kirigami.Theme.textColor
+                        Layout.preferredWidth: Kirigami.Units.iconSizes.large
+                        Layout.preferredHeight: Kirigami.Units.iconSizes.large
+                    }
 
                     ColumnLayout {
                         Layout.fillWidth: true
-                        spacing: 2
+                        spacing: 1
 
                         QQC2.Label {
                             Layout.fillWidth: true
-                            text: root.info.ok ? root.info.model : i18n("UPS Monitor")
-                            font.pointSize: fullRoot.compactHeightMode ? Kirigami.Theme.defaultFont.pointSize + 1 : Kirigami.Theme.defaultFont.pointSize + 3
+                            text: i18n("Last power loss")
+                            color: Kirigami.Theme.textColor
+                            elide: Text.ElideRight
+                        }
+
+                        QQC2.Label {
+                            Layout.fillWidth: true
+                            text: root.lastPowerLossText
+                            color: Kirigami.Theme.textColor
+                            font.pointSize: Kirigami.Theme.defaultFont.pointSize + 2
                             font.bold: true
                             elide: Text.ElideRight
                         }
-
-                        QQC2.Label {
-                            Layout.fillWidth: true
-                            text: root.statusLine
-                            color: root.statusColor
-                            font.bold: true
-                            elide: Text.ElideRight
-                        }
-
-                        QQC2.Label {
-                            Layout.fillWidth: true
-                            text: root.info.ok ? root.info.upsName : root.lastError
-                            opacity: 0.75
-                            wrapMode: Text.WordWrap
-                            maximumLineCount: fullRoot.compactHeightMode ? 1 : 2
-                            elide: Text.ElideRight
-                        }
                     }
-                }
-            }
-
-            Loader {
-                visible: fullRoot.sideBySideHeader
-                Layout.fillWidth: true
-                Layout.minimumWidth: Kirigami.Units.gridUnit * 10
-                Layout.preferredHeight: fullRoot.batteryCardHeight
-                sourceComponent: batteryCardComponent
-            }
-        }
-
-        Loader {
-            visible: !fullRoot.sideBySideHeader
-            Layout.fillWidth: true
-            Layout.preferredHeight: fullRoot.batteryCardHeight
-            sourceComponent: batteryCardComponent
-        }
-
-        QQC2.Frame {
-            visible: root.hasAlarm
-            Layout.fillWidth: true
-
-            ColumnLayout {
-                anchors.fill: parent
-                spacing: 2
-
-                QQC2.Label {
-                    Layout.fillWidth: true
-                    text: i18n("Alarm")
-                    opacity: 0.7
-                }
-
-                QQC2.Label {
-                    Layout.fillWidth: true
-                    text: root.info.alarm
-                    color: Kirigami.Theme.negativeTextColor
-                    font.bold: true
-                    wrapMode: Text.WordWrap
-                }
-            }
-        }
-
-        GridLayout {
-            Layout.fillWidth: true
-            columns: fullRoot.metricColumns
-            columnSpacing: fullRoot.compactHeightMode ? Kirigami.Units.smallSpacing : Kirigami.Units.largeSpacing
-            rowSpacing: fullRoot.compactHeightMode ? Kirigami.Units.smallSpacing : Kirigami.Units.largeSpacing
-
-            QQC2.Frame {
-                Layout.fillWidth: true
-                Layout.minimumWidth: fullRoot.metricColumns === 4 ? Kirigami.Units.gridUnit * 5 : Kirigami.Units.gridUnit * 7
-
-                ColumnLayout {
-                    anchors.fill: parent
-                    spacing: 2
-
-                    QQC2.Label {
-                        Layout.fillWidth: true
-                        text: i18n("Power")
-                        opacity: 0.7
-                    }
-
-                    QQC2.Label {
-                        Layout.fillWidth: true
-                        text: root.powerText
-                        font.bold: true
-                        horizontalAlignment: Text.AlignRight
-                    }
-                }
-            }
-
-            QQC2.Frame {
-                Layout.fillWidth: true
-                Layout.minimumWidth: fullRoot.metricColumns === 4 ? Kirigami.Units.gridUnit * 5 : Kirigami.Units.gridUnit * 7
-
-                ColumnLayout {
-                    anchors.fill: parent
-                    spacing: 2
-
-                    QQC2.Label {
-                        Layout.fillWidth: true
-                        text: i18n("Voltage")
-                        opacity: 0.7
-                    }
-
-                    QQC2.Label {
-                        Layout.fillWidth: true
-                        text: root.voltageText
-                        font.bold: true
-                        horizontalAlignment: Text.AlignRight
-                    }
-                }
-            }
-
-            QQC2.Frame {
-                Layout.fillWidth: true
-                Layout.minimumWidth: fullRoot.metricColumns === 4 ? Kirigami.Units.gridUnit * 5 : Kirigami.Units.gridUnit * 7
-
-                ColumnLayout {
-                    anchors.fill: parent
-                    spacing: 2
-
-                    QQC2.Label {
-                        Layout.fillWidth: true
-                        text: i18n("Runtime")
-                        opacity: 0.7
-                    }
-
-                    QQC2.Label {
-                        Layout.fillWidth: true
-                        text: root.runtimeTextValue
-                        font.bold: true
-                        horizontalAlignment: Text.AlignRight
-                    }
-                }
-            }
-
-            QQC2.Frame {
-                Layout.fillWidth: true
-                Layout.minimumWidth: fullRoot.metricColumns === 4 ? Kirigami.Units.gridUnit * 5 : Kirigami.Units.gridUnit * 7
-
-                ColumnLayout {
-                    anchors.fill: parent
-                    spacing: 2
-
-                    QQC2.Label {
-                        Layout.fillWidth: true
-                        text: i18n("Load")
-                        opacity: 0.7
-                    }
-
-                    QQC2.Label {
-                        Layout.fillWidth: true
-                        text: root.loadText
-                        font.bold: true
-                        horizontalAlignment: Text.AlignRight
-                    }
-                }
-            }
-        }
-
-        QQC2.Frame {
-            Layout.fillWidth: true
-
-            ColumnLayout {
-                anchors.fill: parent
-                spacing: 2
-
-                QQC2.Label {
-                    Layout.fillWidth: true
-                    text: i18n("Last power loss")
-                    opacity: 0.7
-                }
-
-                QQC2.Label {
-                    Layout.fillWidth: true
-                    text: root.lastPowerLossText
-                    font.bold: true
-                    horizontalAlignment: Text.AlignRight
-                    elide: Text.ElideRight
-                }
-            }
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-
-            Item {
-                Layout.fillWidth: true
-            }
-
-            Item {
-                id: refreshIndicator
-                Layout.preferredWidth: Kirigami.Units.gridUnit * 1.45
-                Layout.preferredHeight: Kirigami.Units.gridUnit * 1.45
-                opacity: 0.5
-
-                Canvas {
-                    id: refreshCanvas
-                    anchors.fill: parent
-                    antialiasing: true
-
-                    onPaint: {
-                        const ctx = getContext("2d")
-                        const w = width
-                        const h = height
-                        const lineWidth = Math.max(1.5, Math.min(w, h) * 0.09)
-                        const radius = (Math.min(w, h) - lineWidth) / 2
-                        const cx = w / 2
-                        const cy = h / 2
-                        const start = -Math.PI / 2
-                        const end = start + (Math.PI * 2 * root.countdownProgress)
-
-                        ctx.reset()
-                        ctx.clearRect(0, 0, w, h)
-
-                        ctx.beginPath()
-                        ctx.arc(cx, cy, radius, 0, Math.PI * 2, false)
-                        ctx.strokeStyle = Qt.rgba(1, 1, 1, 0.08)
-                        ctx.lineWidth = lineWidth
-                        ctx.stroke()
-
-                        if (root.countdownProgress > 0) {
-                            ctx.beginPath()
-                            ctx.arc(cx, cy, radius, start, end, false)
-                            ctx.strokeStyle = Qt.rgba(1, 1, 1, 0.28)
-                            ctx.lineWidth = lineWidth
-                            ctx.lineCap = "round"
-                            ctx.stroke()
-                        }
-                    }
-
-                    Connections {
-                        target: root
-                        function onCountdownProgressChanged() {
-                            refreshCanvas.requestPaint()
-                        }
-                    }
-                }
-
-                QQC2.Label {
-                    anchors.centerIn: parent
-                    text: String(root.countdownSecondsRemaining)
-                    font.bold: true
-                    font.pointSize: Kirigami.Theme.defaultFont.pointSize - 2
-                    color: Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.62)
                 }
             }
         }

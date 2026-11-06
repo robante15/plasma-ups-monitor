@@ -9,6 +9,7 @@ ColumnLayout {
 
     property alias cfg_upsName: upsNameField.text
     property alias cfg_refreshSeconds: refreshSpin.value
+    property alias cfg_showLastPowerLoss: showLastPowerLossCheck.checked
 
     spacing: Kirigami.Units.largeSpacing
 
@@ -48,6 +49,11 @@ ColumnLayout {
                 value: name + "@localhost",
                 label: name + "@localhost"
             })
+        }
+
+        if (detectedUpsModel.count > 0
+                && (!upsNameField.text.trim().length || upsNameField.text.trim() === "ups")) {
+            upsNameField.text = detectedUpsModel.get(0).value
         }
 
         detectedUpsCombo.currentIndex = -1
@@ -110,7 +116,7 @@ ColumnLayout {
         Layout.fillWidth: true
         text: detectedUpsModel.count > 0
             ? i18n("Choose a detected local UPS or enter a custom NUT target below.")
-            : i18n("No local UPS detected. Enter a custom NUT target below, for example eaton@localhost.")
+            : i18n("No local UPS detected. Enter a custom NUT target below, for example ups.")
         opacity: 0.7
         wrapMode: Text.WordWrap
     }
@@ -118,7 +124,7 @@ ColumnLayout {
     QQC2.TextField {
         id: upsNameField
         Layout.fillWidth: true
-        placeholderText: "eaton@localhost"
+        placeholderText: "ups"
 
         onTextChanged: {
             detectedUpsCombo.currentIndex = -1
@@ -140,6 +146,17 @@ ColumnLayout {
         from: 3
         to: 3600
         editable: true
+    }
+
+    QQC2.Label {
+        text: i18n("Show last power loss time")
+    }
+
+    QQC2.CheckBox {
+        id: showLastPowerLossCheck
+        onCheckedChanged: {
+            root.showLastPowerLoss = checked
+        }
     }
 
     Item {

@@ -6,10 +6,13 @@
   <kcfgfile name=""/>
   <group name="General">
     <entry name="upsName" type="String">
-      <default>eaton@localhost</default>
+      <default>ups</default>
     </entry>
     <entry name="refreshSeconds" type="Int">
       <default>10</default>
+    </entry>
+    <entry name="showLastPowerLoss" type="Bool">
+      <default>false</default>
     </entry>
   </group>
 </kcfg>
